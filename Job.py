@@ -143,3 +143,25 @@ class PrintQueueManager:
                 print(f"[EXPIRED] Job {job.job_id} removed (waited {job.waiting_time}s)")
 
             self._reorder_jobs(valid_jobs)
+    #MODULE 4: Concurrent Job Submission
+    def handle_simultaneous_submissions(self, jobs):
+        """
+        Handle a list of job submissions concurrently.
+        Each job is a tuple: (user_id, job_id, priority)
+        """
+        threads = []
+
+        for user_id, job_id, priority in jobs:
+            t = threading.Thread(
+                target=self.enqueue_job,
+                args=(user_id, job_id, priority)
+            )
+            threads.append(t)
+            t.start()
+
+        for t in threads:
+            t.join()
+
+        print("All simultaneous jobs have been submitted.")
+
+        
